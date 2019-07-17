@@ -43,6 +43,7 @@ module ActiveMerchant
       def initialize(options = {})
         requires!(options, :login, :password)
         options[:refund_hash] = Digest::SHA1.hexdigest(options[:rebate_secret]) if options.has_key?(:rebate_secret)
+        options[:credit_hash] = Digest::SHA1.hexdigest(options[:credit_secret]) if options.has_key?(:credit_secret)
         super
       end
 
@@ -70,9 +71,9 @@ module ActiveMerchant
         commit(request)
       end
 
-      def credit(money, authorization, options = {})
-        ActiveMerchant.deprecated CREDIT_DEPRECATION_MESSAGE
-        refund(money, authorization, options)
+      def credit(money, creditcard, options = {})
+       request = build_credit_request(money, creditcard, options)
+       commit(request)
       end
 
       def void(authorization, options = {})
@@ -180,6 +181,28 @@ module ActiveMerchant
           xml.tag! 'autosettle', 'flag' => 1
           add_comments(xml, options)
           add_signed_digest(xml, timestamp, @options[:login], sanitize_order_id(options[:order_id]), amount(money), (options[:currency] || currency(money)), nil)
+        end
+        xml.target!
+      end
+
+      def build_credit_request(money, credit_card, options)
+        timestamp = new_timestamp
+        xml = Builder::XmlMarkup.new :indent => 2
+        xml.tag! 'request', 'timestamp' => timestamp, 'type' => 'credit' do
+          add_merchant_details(xml, options)
+          xml.tag! 'orderid', sanitize_order_id(options[:order_id])
+          add_amount(xml, money, options)
+          add_card(xml, credit_card)
+          xml.tag! 'refundhash', @options[:credit_hash] if @options[:credit_hash]
+          xml.tag! 'autosettle', 'flag' => 1
+          add_signed_digest(xml, timestamp, @options[:login], sanitize_order_id(options[:order_id]), amount(money), (options[:currency] || currency(money)), credit_card.number)
+          if credit_card.is_a?(NetworkTokenizationCreditCard)
+            add_network_tokenization_card(xml, credit_card)
+          else
+            add_three_d_secure(xml, options)
+          end
+          add_comments(xml, options)
+          add_address_and_customer_info(xml, options)
         end
         xml.target!
       end
