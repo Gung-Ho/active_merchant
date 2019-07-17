@@ -72,8 +72,8 @@ module ActiveMerchant
       end
 
       def credit(money, creditcard, options = {})
-       request = build_credit_request(money, creditcard, options)
-       commit(request)
+        request = build_credit_request(money, creditcard, options)
+        commit(request)
       end
 
       def void(authorization, options = {})
