@@ -195,14 +195,8 @@ module ActiveMerchant
           add_card(xml, credit_card)
           xml.tag! 'refundhash', @options[:credit_hash] if @options[:credit_hash]
           xml.tag! 'autosettle', 'flag' => 1
-          add_signed_digest(xml, timestamp, @options[:login], sanitize_order_id(options[:order_id]), amount(money), (options[:currency] || currency(money)), credit_card.number)
-          if credit_card.is_a?(NetworkTokenizationCreditCard)
-            add_network_tokenization_card(xml, credit_card)
-          else
-            add_three_d_secure(xml, options)
-          end
           add_comments(xml, options)
-          add_address_and_customer_info(xml, options)
+          add_signed_digest(xml, timestamp, @options[:login], sanitize_order_id(options[:order_id]), amount(money), (options[:currency] || currency(money)), credit_card.number)
         end
         xml.target!
       end
