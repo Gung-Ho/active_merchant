@@ -12,7 +12,7 @@ class RealexTest < Test::Unit::TestCase
     @password = 'your_secret'
     @account = 'your_account'
     @rebate_secret = 'your_rebate_secret'
-    @credit_secret = 'your_credit_secret'
+    @refund_secret = 'your_refund_secret'
 
     @gateway = RealexGateway.new(
       :login => @login,
@@ -332,8 +332,8 @@ SRC
     assert_xml_equal valid_credit_request_xml, @gateway.build_credit_request(@amount, @credit_card, options)
   end
 
-  def test_credit_with_rebate_secret_xml
-    gateway = RealexGateway.new(:login => @login, :password => @password, :account => @account, :credit_secret => @credit_secret)
+  def test_credit_with_refund_secret_xml
+    gateway = RealexGateway.new(:login => @login, :password => @password, :account => @account, :refund_secret => @refund_secret)
 
     gateway.expects(:new_timestamp).returns('20190717161006')
 
@@ -354,7 +354,7 @@ SRC
       <presind></presind>
     </cvn>
   </card>
-  <refundhash>2379f571d1f7d1a45b084de7eacba2a22cb93051</refundhash>
+  <refundhash>bbc192c6eac0132a039c23eae8550a22907c6796</refundhash>
   <autosettle flag="1"/>
   <sha1hash>73ff566dcfc3a73bebf1a2d387316162111f030e</sha1hash>
 </request>

@@ -370,11 +370,11 @@ class RemoteRealexTest < Test::Unit::TestCase
   end
 
   def test_successful_credit
-    gateway_with_credit_password = RealexGateway.new(fixtures(:realex).merge(:credit_secret => 'refund'))
+    gateway_with_refund_password = RealexGateway.new(fixtures(:realex).merge(:refund_secret => 'refund'))
 
-    credit_response = gateway_with_credit_password.credit(@amount, @visa,
+    credit_response = gateway_with_refund_password.credit(@amount, @visa,
       :order_id => generate_unique_id,
-      :description => 'Test Realex Purchase',
+      :description => 'Test Realex Credit',
       :billing_address => {
         :zip => '90210',
         :country => 'US'
@@ -390,7 +390,7 @@ class RemoteRealexTest < Test::Unit::TestCase
   def test_failed_credit
     credit_response = @gateway.credit(@amount, @visa,
       :order_id => generate_unique_id,
-      :description => 'Test Realex Purchase',
+      :description => 'Test Realex Credit',
       :billing_address => {
         :zip => '90210',
         :country => 'US'
