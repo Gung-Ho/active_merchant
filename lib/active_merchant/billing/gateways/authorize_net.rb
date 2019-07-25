@@ -272,6 +272,7 @@ module ActiveMerchant
             add_payment_source(xml, payment, options)
             add_invoice(xml, transaction_type, options)
             add_tax_exempt_status(xml, options)
+            add_card_code(xml, options)
           end
         end
         add_extra_options_for_cim(xml, options)
@@ -632,6 +633,10 @@ module ActiveMerchant
 
       def add_order_id(xml, options)
         xml.refId(truncate(options[:order_id], 20))
+      end
+
+      def add_card_code(xml, options)
+        xml.cardCode(options[:verification_value])
       end
 
       def add_invoice(xml, transaction_type, options)
